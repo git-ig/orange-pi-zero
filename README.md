@@ -49,6 +49,7 @@ Required packages:
 - `git`
 - `htop`
 - `jq`
+- `lazydocker`
 - `neovim`
 - `ripgrep`
 - `rsync`
@@ -74,12 +75,12 @@ Current aliases and shell helpers:
 
 - `vi` and `vim` -> `nvim`
 - `bat` -> `batcat` if `batcat` exists
-- `lzd` -> `lazydocker` if `lazydocker` exists
+- `lzd` -> `lazydocker`
 - `ll`, `la`, `l`
 - `zoxide` init if installed
 - `fzf` defaults powered by `rg`
 
-Important: `lazydocker` is not installed by `setup_tools.sh` right now. The `lzd` alias only appears if you install `lazydocker` yourself later.
+`lazydocker` is installed from the official ARM64 GitHub release with a pinned version and `sha256` verification.
 
 ## Docker Services
 

@@ -3,6 +3,9 @@ set -Eeuo pipefail
 
 ROOT_CMD=()
 APT_UPDATED=0
+LAZYDOCKER_VERSION="0.24.2"
+LAZYDOCKER_ARCHIVE="lazydocker_${LAZYDOCKER_VERSION}_Linux_arm64.tar.gz"
+LAZYDOCKER_SHA256="63c1c7e781914c7624cb30c826dd55b3b8797ce391b38ddd263eddeb999a463f"
 
 log() {
   printf '\n==> %s\n' "$1"
@@ -168,6 +171,30 @@ ensure_fd_command() {
   fi
 }
 
+install_lazydocker() {
+  local tmpdir
+  local archive_url
+
+  if command -v lazydocker >/dev/null 2>&1 && lazydocker --version 2>/dev/null | grep -Fq "$LAZYDOCKER_VERSION"; then
+    log "lazydocker ${LAZYDOCKER_VERSION} is already installed"
+    return
+  fi
+
+  log "Installing lazydocker ${LAZYDOCKER_VERSION}"
+  tmpdir="$(mktemp -d)"
+  archive_url="https://github.com/jesseduffield/lazydocker/releases/download/v${LAZYDOCKER_VERSION}/${LAZYDOCKER_ARCHIVE}"
+
+  curl -fsSL "$archive_url" -o "$tmpdir/$LAZYDOCKER_ARCHIVE"
+  printf '%s  %s\n' "$LAZYDOCKER_SHA256" "$tmpdir/$LAZYDOCKER_ARCHIVE" | sha256sum -c -
+  tar -xzf "$tmpdir/$LAZYDOCKER_ARCHIVE" -C "$tmpdir" lazydocker
+  run_root install -m 755 "$tmpdir/lazydocker" /usr/local/bin/lazydocker
+  rm -rf "$tmpdir"
+
+  if ! command -v docker >/dev/null 2>&1; then
+    warn "Docker CLI is not installed yet. lazydocker will be available after Docker is installed."
+  fi
+}
+
 configure_shell() {
   local shell_rc="$HOME/.bashrc"
   local shell_addons="$HOME/.bash_aliases.orange-pi-zero"
@@ -226,6 +253,7 @@ main() {
   install_optional_packages
   cleanup_legacy_neovim
   ensure_fd_command
+  install_lazydocker
   configure_shell
   print_summary
 }
