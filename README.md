@@ -37,6 +37,10 @@ The script in [setup_tools.sh](/Users/imb1/dev/orange-pi-zero/setup_tools.sh#L1)
 - creates a Debian-friendly `fd` shim for `fdfind`
 - writes shell tweaks into `~/.bash_aliases.orange-pi-zero`
 
+## Extra Scripts
+
+- `scripts/configure-zram-dietpi.sh` disables disk-backed swap on DietPi and enables `zram-tools` with sysctl tuning.
+
 ## Installed Tooling
 
 Required packages:
@@ -125,6 +129,8 @@ Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/b
 ```text
 .
 ├── setup_tools.sh
+├── scripts
+│   └── configure-zram-dietpi.sh
 ├── docks
 │   ├── dashboard
 │   ├── filebrowser
@@ -138,3 +144,4 @@ Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/b
 - The script does not wipe your Neovim config.
 - If an old `/opt/nvim` install exists, it is left in place.
 - Compose files were validated with `docker compose config`.
+- `scripts/configure-zram-dietpi.sh` is `zRAM-only`: disk swap is disabled on purpose to reduce SD card or flash wear.
