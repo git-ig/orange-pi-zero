@@ -7,9 +7,8 @@ services:
       PUID: 1000
       PGID: 1000
     ports:
-      - "100.64.79.123:4005:80"
+      - "${TAILSCALE_IP:?set in .env}:4005:80"
     volumes:
       - /mnt/dietpi_userdata:/srv
       - ./database:/database
       - ./config:/config
-

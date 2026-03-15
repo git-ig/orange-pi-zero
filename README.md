@@ -4,7 +4,7 @@ This repository is a clean setup base for one specific machine:
 
 - board: Orange Pi Zero 2W
 - OS: DietPi ARM64
-- access: Tailscale-only services on `100.64.79.123`
+- access: Tailscale-only services via `TAILSCALE_IP` from `.env`
 
 The goal is simple: keep the machine predictable, lightweight and easy to restore.
 
@@ -15,6 +15,7 @@ Clone the repo and run the setup script:
 ```bash
 git clone https://github.com/git-ig/orange-pi-zero.git
 cd orange-pi-zero
+cp .env.example .env
 chmod +x ./setup_tools.sh
 ./setup_tools.sh
 source ~/.bashrc
@@ -84,32 +85,37 @@ Current aliases and shell helpers:
 
 ## Docker Services
 
-All app UIs are bound only to the Tailscale IP `100.64.79.123`.
+All app UIs are bound only to the Tailscale IP from `.env`.
+
+Example `.env`:
+
+```env
+TAILSCALE_IP=100.64.79.123
+```
 
 | Service | Path | URL |
 | --- | --- | --- |
-| Homepage dashboard | `docks/dashboards` | `http://100.64.79.123:4004` |
-| File Browser | `docks/filebrowser` | `http://100.64.79.123:4005` |
-| Gitea | `docks/gitea` | `http://100.64.79.123:4044` |
-| Gitea SSH | `docks/gitea` | `ssh://git@100.64.79.123:4022` |
-| Beszel Hub | `docks/beszel` | `http://100.64.79.123:4046` |
+| Homepage dashboard | `docks/dashboards` | `http://TAILSCALE_IP:4004` |
+| File Browser | `docks/filebrowser` | `http://TAILSCALE_IP:4005` |
+| Gitea | `docks/gitea` | `http://TAILSCALE_IP:4044` |
+| Gitea SSH | `docks/gitea` | `ssh://git@TAILSCALE_IP:4022` |
+| Beszel Hub | `docks/beszel` | `http://TAILSCALE_IP:4046` |
 
 ## Start Services
 
 Examples:
 
 ```bash
-cd docks/dashboards && docker compose up -d
-cd docks/filebrowser && docker compose up -d
-cd docks/gitea && docker compose up -d
-cd docks/beszel && docker compose up -d
+docker compose --env-file .env -f docks/dashboards/docker-compose.yml up -d
+docker compose --env-file .env -f docks/filebrowser/docker-compose.yml up -d
+docker compose --env-file .env -f docks/gitea/docker-compose.yml up -d
+docker compose --env-file .env -f docks/beszel/docker-compose.yml up -d
 ```
 
 Beszel agent is optional and sits behind a Compose profile:
 
 ```bash
-cd docks/beszel
-docker compose --profile agent up -d
+docker compose --env-file .env -f docks/beszel/docker-compose.yml --profile agent up -d
 ```
 
 Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/beszel/docker-compose.yml](/Users/imb1/dev/orange-pi-zero/docks/beszel/docker-compose.yml#L1).

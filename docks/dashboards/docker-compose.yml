@@ -4,12 +4,11 @@ services:
     container_name: homepage
     restart: unless-stopped
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: 100.64.79.123:4004
+      HOMEPAGE_ALLOWED_HOSTS: ${TAILSCALE_IP:?set in .env}:4004
       PUID: 1000
       PGID: 1000
     ports:
-      - "100.64.79.123:4004:3000"
+      - "${TAILSCALE_IP:?set in .env}:4004:3000"
     volumes:
       - ./config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
-

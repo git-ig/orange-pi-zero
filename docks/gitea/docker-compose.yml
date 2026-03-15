@@ -7,16 +7,15 @@ services:
       USER_UID: 1000
       USER_GID: 1000
       GITEA__database__DB_TYPE: sqlite3
-      GITEA__server__DOMAIN: 100.64.79.123
-      GITEA__server__ROOT_URL: http://100.64.79.123:4044/
-      GITEA__server__SSH_DOMAIN: 100.64.79.123
+      GITEA__server__DOMAIN: ${TAILSCALE_IP:?set in .env}
+      GITEA__server__ROOT_URL: http://${TAILSCALE_IP:?set in .env}:4044/
+      GITEA__server__SSH_DOMAIN: ${TAILSCALE_IP:?set in .env}
       GITEA__server__SSH_PORT: 4022
       GITEA__server__START_SSH_SERVER: "true"
     ports:
-      - "100.64.79.123:4044:3000"
-      - "100.64.79.123:4022:22"
+      - "${TAILSCALE_IP:?set in .env}:4044:3000"
+      - "${TAILSCALE_IP:?set in .env}:4022:22"
     volumes:
       - ./gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-
