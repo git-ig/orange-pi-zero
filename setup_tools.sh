@@ -189,6 +189,10 @@ if command -v batcat >/dev/null 2>&1; then
   alias bat="batcat"
 fi
 
+if command -v lazydocker >/dev/null 2>&1; then
+  alias lzd="lazydocker"
+fi
+
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init bash)"
 fi
