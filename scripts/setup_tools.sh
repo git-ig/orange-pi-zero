@@ -203,7 +203,7 @@ configure_shell() {
   log "Writing Orange Pi shell profile"
 
   cat > "$shell_addons" <<'EOF'
-# Managed by orange-pi-zero/setup_tools.sh
+# Managed by orange-pi-zero/scripts/setup_tools.sh
 
 if command -v nvim >/dev/null 2>&1; then
   export EDITOR="nvim"

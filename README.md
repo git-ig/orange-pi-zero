@@ -16,18 +16,18 @@ Clone the repo and run the setup script:
 git clone https://github.com/git-ig/orange-pi-zero.git
 cd orange-pi-zero
 cp .env.example .env
-chmod +x ./setup_tools.sh
-./setup_tools.sh
+chmod +x ./scripts/setup_tools.sh
+./scripts/setup_tools.sh
 source ~/.bashrc
 ```
 
 Raw install link for the script:
 
-[setup_tools.sh](https://raw.githubusercontent.com/git-ig/orange-pi-zero/main/setup_tools.sh)
+[scripts/setup_tools.sh](https://raw.githubusercontent.com/git-ig/orange-pi-zero/main/scripts/setup_tools.sh)
 
-## What `setup_tools.sh` Does
+## What `scripts/setup_tools.sh` Does
 
-The script in [setup_tools.sh](/Users/imb1/dev/orange-pi-zero/setup_tools.sh#L1):
+The script in [scripts/setup_tools.sh](/Users/imb1/dev/orange-pi-zero/scripts/setup_tools.sh#L1):
 
 - verifies that the host is DietPi on ARM64
 - checks the board model and warns if it is not exactly Orange Pi Zero 2W
@@ -128,9 +128,9 @@ Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/b
 
 ```text
 .
-├── setup_tools.sh
 ├── scripts
-│   └── configure-zram-dietpi.sh
+│   ├── configure-zram-dietpi.sh
+│   └── setup_tools.sh
 ├── docks
 │   ├── dashboard
 │   ├── filebrowser
