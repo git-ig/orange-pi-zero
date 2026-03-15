@@ -31,9 +31,9 @@ The script in [scripts/setup_tools.sh](/Users/imb1/dev/orange-pi-zero/scripts/se
 
 - verifies that the host is DietPi on ARM64
 - checks the board model and warns if it is not exactly Orange Pi Zero 2W
-- installs a stable CLI toolset from DietPi/Debian repositories only
+- installs a mostly Debian/DietPi-based CLI toolset plus a few official upstream releases
 - avoids third-party APT repos and avoids `curl | sh`
-- installs Neovim from APT instead of custom tarballs
+- installs the latest Neovim Linux ARM64 release from the official upstream release page
 - creates a Debian-friendly `fd` shim for `fdfind`
 - writes shell tweaks into `~/.bash_aliases.orange-pi-zero`
 
@@ -61,7 +61,6 @@ Required packages:
 - `htop`
 - `jq`
 - `lazydocker`
-- `neovim`
 - `ripgrep`
 - `rsync`
 - `tmux`
@@ -77,6 +76,11 @@ Optional packages are installed only if they exist in the current DietPi/Debian 
 - `gdu`
 - `ncdu`
 - `zoxide`
+
+Official upstream release installs:
+
+- `neovim` latest stable Linux ARM64 release
+- `lazydocker` pinned ARM64 release
 
 ## Shell Profile
 

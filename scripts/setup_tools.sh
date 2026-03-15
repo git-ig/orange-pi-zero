@@ -6,6 +6,7 @@ APT_UPDATED=0
 LAZYDOCKER_VERSION="0.24.2"
 LAZYDOCKER_ARCHIVE="lazydocker_${LAZYDOCKER_VERSION}_Linux_arm64.tar.gz"
 LAZYDOCKER_SHA256="63c1c7e781914c7624cb30c826dd55b3b8797ce391b38ddd263eddeb999a463f"
+NEOVIM_ARCHIVE="nvim-linux-arm64.tar.gz"
 
 log() {
   printf '\n==> %s\n' "$1"
@@ -87,7 +88,6 @@ install_required_packages() {
     git
     htop
     jq
-    neovim
     ripgrep
     rsync
     tmux
@@ -143,20 +143,29 @@ install_optional_packages() {
   fi
 }
 
-cleanup_legacy_neovim() {
-  local target
+install_neovim_latest() {
+  local tmpdir
+  local archive_url
+  local shasum_url
+  local shasum_line
 
-  if [[ -L /usr/local/bin/nvim ]]; then
-    target="$(readlink /usr/local/bin/nvim || true)"
-    if [[ "$target" == "/opt/nvim/bin/nvim" ]]; then
-      log "Removing legacy /opt/nvim Neovim symlink"
-      run_root rm -f /usr/local/bin/nvim
-    fi
-  fi
+  log "Installing latest Neovim from official upstream release"
+  tmpdir="$(mktemp -d)"
+  archive_url="https://github.com/neovim/neovim/releases/latest/download/${NEOVIM_ARCHIVE}"
+  shasum_url="https://github.com/neovim/neovim/releases/latest/download/shasum.txt"
 
-  if [[ -d /opt/nvim ]]; then
-    warn "Legacy /opt/nvim directory detected. It was left untouched on purpose."
-  fi
+  curl -fsSL "$archive_url" -o "$tmpdir/$NEOVIM_ARCHIVE"
+  curl -fsSL "$shasum_url" -o "$tmpdir/shasum.txt"
+  shasum_line="$(grep " ${NEOVIM_ARCHIVE}\$" "$tmpdir/shasum.txt" || true)"
+
+  [[ -n "$shasum_line" ]] || die "Failed to find ${NEOVIM_ARCHIVE} checksum in upstream shasum.txt"
+  printf '%s\n' "$shasum_line" | (cd "$tmpdir" && sha256sum -c -)
+
+  run_root rm -rf /opt/nvim
+  run_root mkdir -p /opt/nvim
+  run_root tar -xzf "$tmpdir/$NEOVIM_ARCHIVE" -C /opt/nvim --strip-components=1
+  run_root ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
+  rm -rf "$tmpdir"
 }
 
 ensure_fd_command() {
@@ -251,7 +260,7 @@ main() {
   apt_update
   install_required_packages
   install_optional_packages
-  cleanup_legacy_neovim
+  install_neovim_latest
   ensure_fd_command
   install_lazydocker
   configure_shell
