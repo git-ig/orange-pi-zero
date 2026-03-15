@@ -27,6 +27,23 @@ run_root() {
   "${ROOT_CMD[@]}" "$@"
 }
 
+current_zram_algorithm() {
+  awk '{
+    for (i = 1; i <= NF; i++) {
+      if ($i ~ /^\[/) {
+        gsub(/\[/, "", $i)
+        gsub(/\]/, "", $i)
+        print $i
+        exit
+      }
+    }
+  }' /sys/block/zram0/comp_algorithm
+}
+
+current_zram_size_mib() {
+  awk '{printf "%.0f", $1 / 1024 / 1024}' /sys/block/zram0/disksize
+}
+
 setup_privileges() {
   if (( EUID == 0 )); then
     ROOT_CMD=()
@@ -74,6 +91,24 @@ EOF
   run_root rm -f /swapfile /var/swap
 }
 
+reset_active_zram() {
+  log "Resetting active zram device"
+
+  if swapon --noheadings --show=NAME 2>/dev/null | grep -Fxq "/dev/zram0"; then
+    run_root swapoff /dev/zram0
+  fi
+
+  if command -v zramswap >/dev/null 2>&1; then
+    run_root zramswap stop || true
+  fi
+
+  if [[ -w /sys/block/zram0/reset ]]; then
+    printf '1\n' | run_root tee /sys/block/zram0/reset >/dev/null || true
+  fi
+
+  run_root modprobe -r zram || true
+}
+
 configure_zram() {
   log "Configuring zram-tools"
 
@@ -93,12 +128,14 @@ EOF
     die "Set either ZRAM_SIZE_MIB or ZRAM_PERCENT."
   fi
 
+  reset_active_zram
+
   if ! run_root modprobe zram; then
     warn "modprobe zram failed. zramswap service may still work if zram is built into the kernel."
   fi
 
   run_root systemctl enable zramswap
-  run_root systemctl restart zramswap
+  run_root zramswap start
 }
 
 configure_sysctl() {
@@ -113,20 +150,46 @@ EOF
 }
 
 verify_setup() {
+  local actual_algo
+  local actual_size_mib
+
   log "Verifying swap and zram"
   swapon --show
   zramctl || true
   free -h
+
+  if [[ -e /sys/block/zram0/comp_algorithm && -e /sys/block/zram0/disksize ]]; then
+    actual_algo="$(current_zram_algorithm)"
+    actual_size_mib="$(current_zram_size_mib)"
+
+    if [[ "$actual_algo" != "$ZRAM_ALGO" ]]; then
+      warn "Requested ALGO=$ZRAM_ALGO but active zRAM algorithm is $actual_algo"
+    fi
+
+    if [[ -n "$ZRAM_SIZE_MIB" && "$actual_size_mib" != "$ZRAM_SIZE_MIB" ]]; then
+      warn "Requested SIZE=${ZRAM_SIZE_MIB} MiB but active zRAM size is ${actual_size_mib} MiB"
+      warn "If this persists, run: sudo systemctl status zramswap --no-pager"
+      warn "And then: sudo journalctl -u zramswap -b --no-pager | tail -n 50"
+    fi
+  fi
 }
 
 print_summary() {
+  local actual_algo=""
+  local actual_size_mib=""
+
   log "Done"
   printf 'Disk swap: disabled\n'
 
-  if [[ -n "$ZRAM_SIZE_MIB" ]]; then
-    printf 'zRAM size: %s MiB\n' "$ZRAM_SIZE_MIB"
+  if [[ -e /sys/block/zram0/comp_algorithm && -e /sys/block/zram0/disksize ]]; then
+    actual_algo="$(current_zram_algorithm)"
+    actual_size_mib="$(current_zram_size_mib)"
+    printf 'Active zRAM algorithm: %s\n' "$actual_algo"
+    printf 'Active zRAM size: %s MiB\n' "$actual_size_mib"
+  elif [[ -n "$ZRAM_SIZE_MIB" ]]; then
+    printf 'Requested zRAM size: %s MiB\n' "$ZRAM_SIZE_MIB"
   else
-    printf 'zRAM size: %s%% of RAM\n' "$ZRAM_PERCENT"
+    printf 'Requested zRAM size: %s%% of RAM\n' "$ZRAM_PERCENT"
   fi
 }
 
