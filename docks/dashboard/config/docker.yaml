@@ -1,0 +1,4 @@
+# Optional docker integration template.
+# If you later want Homepage to show container status via the Docker API,
+# either run Homepage with direct socket access as root or add a docker socket proxy.
+

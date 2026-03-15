@@ -39,7 +39,13 @@ The script in [scripts/setup_tools.sh](/Users/imb1/dev/orange-pi-zero/scripts/se
 
 ## Extra Scripts
 
-- `scripts/configure-zram-dietpi.sh` disables disk-backed swap on DietPi and enables `zram-tools` with sysctl tuning.
+- `scripts/zram.sh` disables disk-backed swap on DietPi and enables `zram-tools` with sysctl tuning.
+
+Run it with:
+
+```bash
+sudo ./scripts/zram.sh
+```
 
 ## Installed Tooling
 
@@ -99,7 +105,7 @@ TAILSCALE_IP=100.64.79.123
 
 | Service | Path | URL |
 | --- | --- | --- |
-| Homepage dashboard | `docks/dashboards` | `http://TAILSCALE_IP:4004` |
+| Homepage dashboard | `docks/dashboard` | `http://TAILSCALE_IP:4004` |
 | File Browser | `docks/filebrowser` | `http://TAILSCALE_IP:4005` |
 | Gitea | `docks/gitea` | `http://TAILSCALE_IP:4044` |
 | Gitea SSH | `docks/gitea` | `ssh://git@TAILSCALE_IP:4022` |
@@ -110,10 +116,32 @@ TAILSCALE_IP=100.64.79.123
 Examples:
 
 ```bash
-docker compose --env-file .env -f docks/dashboards/docker-compose.yml up -d
+docker compose --env-file .env -f docks/dashboard/docker-compose.yml up -d
 docker compose --env-file .env -f docks/filebrowser/docker-compose.yml up -d
 docker compose --env-file .env -f docks/gitea/docker-compose.yml up -d
 docker compose --env-file .env -f docks/beszel/docker-compose.yml up -d
+```
+
+Or use `make`, where each target is just a named command from [Makefile](/Users/imb1/dev/orange-pi-zero/Makefile#L1):
+
+```bash
+make up-all
+make down-all
+make logs
+```
+
+Per-service targets:
+
+```bash
+make up-dashboard
+make up-filebrowser
+make up-gitea
+make up-beszel
+
+make down-dashboard
+make down-filebrowser
+make down-gitea
+make down-beszel
 ```
 
 Beszel agent is optional and sits behind a Compose profile:
@@ -128,8 +156,9 @@ Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/b
 
 ```text
 .
+├── Makefile
 ├── scripts
-│   ├── configure-zram-dietpi.sh
+│   ├── zram.sh
 │   └── setup_tools.sh
 ├── docks
 │   ├── dashboard
@@ -144,4 +173,4 @@ Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/b
 - The script does not wipe your Neovim config.
 - If an old `/opt/nvim` install exists, it is left in place.
 - Compose files were validated with `docker compose config`.
-- `scripts/configure-zram-dietpi.sh` is `zRAM-only`: disk swap is disabled on purpose to reduce SD card or flash wear.
+- `scripts/zram.sh` is `zRAM-only`: disk swap is disabled on purpose to reduce SD card or flash wear.
