@@ -126,7 +126,7 @@ Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/b
 .
 ├── setup_tools.sh
 ├── docks
-│   ├── dashboards
+│   ├── dashboard
 │   ├── filebrowser
 │   ├── gitea
 │   └── beszel
