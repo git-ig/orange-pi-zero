@@ -104,7 +104,7 @@ All app UIs are bound only to the Tailscale IP from `.env`.
 Example `.env`:
 
 ```env
-TAILSCALE_IP=100.64.79.123
+TAILSCALE_IP=100.11.22.123
 ```
 
 | Service | Path | URL |
