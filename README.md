@@ -120,7 +120,34 @@ BESZEL_AGENT_KEY=change-me
 
 ## Start Services
 
-Examples:
+### 1. Prepare `.env`
+
+```bash
+cp .env.example .env
+```
+
+Set your real Tailscale IP in `.env`:
+
+```env
+TAILSCALE_IP=100.x.x.x
+```
+
+### 2. Start the main stack
+
+This starts everything except the optional `beszel-agent`:
+
+```bash
+make up-all
+```
+
+Useful follow-up commands:
+
+```bash
+make logs
+make down-all
+```
+
+If you prefer raw `docker compose` commands instead of `make`:
 
 ```bash
 docker compose --env-file .env -f docks/excalidraw/docker-compose.yml up -d
@@ -130,12 +157,44 @@ docker compose --env-file .env -f docks/gitea/docker-compose.yml up -d
 docker compose --env-file .env -f docks/beszel/docker-compose.yml up -d
 ```
 
-Or use `make`, where each target is just a named command from [Makefile](/Users/imb1/dev/orange-pi-zero/Makefile#L1):
+### 3. Open the web UIs
+
+- Excalidraw: `http://TAILSCALE_IP:4048`
+- Dozzle: `http://TAILSCALE_IP:4049`
+- File Browser: `http://TAILSCALE_IP:4005`
+- Gitea: `http://TAILSCALE_IP:4044`
+- Beszel Hub: `http://TAILSCALE_IP:4046`
+
+### 4. Start Beszel agent after token and key are ready
+
+`beszel-agent` is optional and does not need to start with the rest of the stack.
+
+1. Open Beszel Hub at `http://TAILSCALE_IP:4046`.
+2. Add a new system in the web UI.
+3. Copy the generated token and public key into `.env`:
+
+```env
+BESZEL_AGENT_TOKEN=your-token
+BESZEL_AGENT_KEY=your-public-key
+```
+
+4. Use `/beszel_socket/beszel.sock` as Host / IP in the Beszel UI.
+5. Start the agent:
 
 ```bash
-make up-all
-make down-all
-make logs
+make up-beszel-agent
+```
+
+To stop only the agent:
+
+```bash
+make down-beszel-agent
+```
+
+Or with raw Compose:
+
+```bash
+docker compose --env-file .env -f docks/beszel/docker-compose.yml --profile agent up -d
 ```
 
 Per-service targets:
@@ -155,20 +214,6 @@ make down-gitea
 make down-beszel
 make down-beszel-agent
 ```
-
-Beszel agent is optional and sits behind a Compose profile:
-
-```bash
-docker compose --env-file .env -f docks/beszel/docker-compose.yml --profile agent up -d
-```
-
-To connect the local agent:
-
-1. Open Beszel Hub at `http://TAILSCALE_IP:4046`.
-2. Add a new system in the web UI.
-3. Copy the generated token and public key into `.env` as `BESZEL_AGENT_TOKEN` and `BESZEL_AGENT_KEY`.
-4. Use `/beszel_socket/beszel.sock` as Host / IP in the Beszel UI.
-5. Start the agent with `make up-beszel-agent`.
 
 ## Repo Layout
 
