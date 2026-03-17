@@ -5,7 +5,7 @@ FILEBROWSER_COMPOSE := docker compose --env-file $(ENV_FILE) -f docks/filebrowse
 GITEA_COMPOSE := docker compose --env-file $(ENV_FILE) -f docks/gitea/docker-compose.yml
 BESZEL_COMPOSE := docker compose --env-file $(ENV_FILE) -f docks/beszel/docker-compose.yml
 
-.PHONY: up-all down-all logs up-excalidraw up-dozzle up-filebrowser up-gitea up-beszel down-excalidraw down-dozzle down-filebrowser down-gitea down-beszel
+.PHONY: up-all down-all logs up-excalidraw up-dozzle up-filebrowser up-gitea up-beszel up-beszel-agent down-excalidraw down-dozzle down-filebrowser down-gitea down-beszel down-beszel-agent
 
 up-all:
 	$(EXCALIDRAW_COMPOSE) up -d
@@ -29,6 +29,9 @@ up-gitea:
 up-beszel:
 	$(BESZEL_COMPOSE) up -d
 
+up-beszel-agent:
+	$(BESZEL_COMPOSE) --profile agent up -d
+
 down-all:
 	$(BESZEL_COMPOSE) down
 	$(GITEA_COMPOSE) down
@@ -50,6 +53,9 @@ down-gitea:
 
 down-beszel:
 	$(BESZEL_COMPOSE) down
+
+down-beszel-agent:
+	$(BESZEL_COMPOSE) --profile agent down
 
 logs:
 	$(EXCALIDRAW_COMPOSE) logs --tail=50
