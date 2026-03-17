@@ -1,0 +1,10 @@
+services:
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "${TAILSCALE_IP:?set in .env}:4049:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+

@@ -110,6 +110,7 @@ TAILSCALE_IP=100.11.22.123
 | Service | Path | URL |
 | --- | --- | --- |
 | Excalidraw | `docks/excalidraw` | `http://TAILSCALE_IP:4048` |
+| Dozzle | `docks/dozzle` | `http://TAILSCALE_IP:4049` |
 | File Browser | `docks/filebrowser` | `http://TAILSCALE_IP:4005` |
 | Gitea | `docks/gitea` | `http://TAILSCALE_IP:4044` |
 | Gitea SSH | `docks/gitea` | `ssh://git@TAILSCALE_IP:4022` |
@@ -121,6 +122,7 @@ Examples:
 
 ```bash
 docker compose --env-file .env -f docks/excalidraw/docker-compose.yml up -d
+docker compose --env-file .env -f docks/dozzle/docker-compose.yml up -d
 docker compose --env-file .env -f docks/filebrowser/docker-compose.yml up -d
 docker compose --env-file .env -f docks/gitea/docker-compose.yml up -d
 docker compose --env-file .env -f docks/beszel/docker-compose.yml up -d
@@ -138,11 +140,13 @@ Per-service targets:
 
 ```bash
 make up-excalidraw
+make up-dozzle
 make up-filebrowser
 make up-gitea
 make up-beszel
 
 make down-excalidraw
+make down-dozzle
 make down-filebrowser
 make down-gitea
 make down-beszel
@@ -166,6 +170,7 @@ Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/b
 │   └── setup_tools.sh
 ├── docks
 │   ├── excalidraw
+│   ├── dozzle
 │   ├── filebrowser
 │   ├── gitea
 │   └── beszel
