@@ -109,7 +109,7 @@ TAILSCALE_IP=100.11.22.123
 
 | Service | Path | URL |
 | --- | --- | --- |
-| Homepage dashboard | `docks/dashboard` | `http://TAILSCALE_IP:4004` |
+| Excalidraw | `docks/excalidraw` | `http://TAILSCALE_IP:4048` |
 | File Browser | `docks/filebrowser` | `http://TAILSCALE_IP:4005` |
 | Gitea | `docks/gitea` | `http://TAILSCALE_IP:4044` |
 | Gitea SSH | `docks/gitea` | `ssh://git@TAILSCALE_IP:4022` |
@@ -120,7 +120,7 @@ TAILSCALE_IP=100.11.22.123
 Examples:
 
 ```bash
-docker compose --env-file .env -f docks/dashboard/docker-compose.yml up -d
+docker compose --env-file .env -f docks/excalidraw/docker-compose.yml up -d
 docker compose --env-file .env -f docks/filebrowser/docker-compose.yml up -d
 docker compose --env-file .env -f docks/gitea/docker-compose.yml up -d
 docker compose --env-file .env -f docks/beszel/docker-compose.yml up -d
@@ -137,12 +137,12 @@ make logs
 Per-service targets:
 
 ```bash
-make up-dashboard
+make up-excalidraw
 make up-filebrowser
 make up-gitea
 make up-beszel
 
-make down-dashboard
+make down-excalidraw
 make down-filebrowser
 make down-gitea
 make down-beszel
@@ -165,7 +165,7 @@ Before starting the agent, replace the placeholder `TOKEN` and `KEY` in [docks/b
 │   ├── zram.sh
 │   └── setup_tools.sh
 ├── docks
-│   ├── dashboard
+│   ├── excalidraw
 │   ├── filebrowser
 │   ├── gitea
 │   └── beszel

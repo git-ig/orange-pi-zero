@@ -1,0 +1,8 @@
+services:
+  excalidraw:
+    image: excalidraw/excalidraw:latest
+    container_name: excalidraw
+    restart: unless-stopped
+    ports:
+      - "${TAILSCALE_IP:?set in .env}:4048:80"
+
