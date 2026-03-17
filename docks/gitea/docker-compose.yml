@@ -11,7 +11,7 @@ services:
       GITEA__server__ROOT_URL: http://${TAILSCALE_IP:?set in .env}:4044/
       GITEA__server__SSH_DOMAIN: ${TAILSCALE_IP:?set in .env}
       GITEA__server__SSH_PORT: 4022
-      GITEA__server__START_SSH_SERVER: "true"
+      GITEA__server__START_SSH_SERVER: "false"
     ports:
       - "${TAILSCALE_IP:?set in .env}:4044:3000"
       - "${TAILSCALE_IP:?set in .env}:4022:22"
